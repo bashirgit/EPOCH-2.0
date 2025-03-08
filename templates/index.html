@@ -6,72 +6,29 @@
     <title>Garbage Classifier</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: Arial, sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 0;
+            margin: 50px;
         }
         .container {
             max-width: 600px;
-            margin: 50px auto;
+            margin: auto;
             padding: 20px;
-            background: #fff;
+            border: 1px solid #ccc;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #4CAF50;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
         }
         input[type="file"] {
-            display: none;
-        }
-        label {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 1em;
-            color: #fff;
-            background-color: #4CAF50;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        label:hover {
-            background-color: #45a049;
+            margin: 20px 0;
         }
         img {
             max-width: 100%;
             height: auto;
-            margin-top: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 1em;
-            color: #fff;
-            background-color: #007BFF;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 20px;
-        }
-        button:hover {
-            background-color: #0056b3;
+            margin-top: 10px;
         }
         .result {
             margin-top: 20px;
-            font-size: 1.2em;
             font-weight: bold;
-            color: #333;
         }
     </style>
 </head>
@@ -79,7 +36,6 @@
     <div class="container">
         <h1>Garbage Classifier</h1>
         <p>Upload an image to classify the type of garbage.</p>
-        <label for="imageInput">Choose Image</label>
         <input type="file" id="imageInput" accept="image/*">
         <br>
         <img id="preview" style="display: none;" />
