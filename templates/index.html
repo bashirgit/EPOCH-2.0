@@ -1,69 +1,299 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Garbage Classifier</title>
+    <title>EPOCH - Garbage Classifier</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #388e3c;
+            --secondary-color: #81c784;
+            --accent-color: #2e7d32;
+            --text-color: #333333;
+            --background-color: #f8f8f8;
+            --card-background: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             text-align: center;
-            margin: 50px;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
         }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+        
+        .header p {
+            margin: 10px 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
         .container {
-            max-width: 600px;
-            margin: auto;
+            max-width: 800px;
+            margin: 0 auto 50px;
+            padding: 30px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
-        }
-        input[type="file"] {
+            border: 2px dashed var(--secondary-color);
+            border-radius: var(--border-radius);
             margin: 20px 0;
+            transition: all 0.3s ease;
+            background-color: rgba(129, 199, 132, 0.05);
         }
-        img {
+        
+        .upload-container:hover, .upload-container.dragover {
+            background-color: rgba(129, 199, 132, 0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin: 20px 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-input-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-input-button:hover {
+            background-color: var(--accent-color);
+        }
+        
+        .preview-container {
+            margin: 20px 0;
+            width: 100%;
+        }
+        
+        .image-preview {
             max-width: 100%;
-            height: auto;
-            margin-top: 10px;
+            max-height: 350px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
         }
-        .result {
+        
+        .predict-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .predict-button:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .predict-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: var(--border-radius);
             font-weight: bold;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #666;
         }
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>EPOCH Garbage Classifier</h1>
+        <p>Upload an image to identify and classify waste materials</p>
+    </div>
+    
     <div class="container">
-        <h1>Garbage Classifier</h1>
-        <p>Upload an image to classify the type of garbage.</p>
-        <input type="file" id="imageInput" accept="image/*">
-        <br>
-        <img id="preview" style="display: none;" />
-        <br>
-        <button onclick="uploadImage()">Predict</button>
-        <p class="result" id="prediction"></p>
+        <div class="upload-container" id="dropArea">
+            <i class="fas fa-cloud-upload-alt" style="font-size: 48px; color: var(--secondary-color); margin-bottom: 15px;"></i>
+            <p>Drag and drop your image here or click to browse</p>
+            
+            <div class="file-input-wrapper">
+                <div class="file-input-button">
+                    <i class="fas fa-image"></i> Select Image
+                </div>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+        </div>
+        
+        <div class="preview-container">
+            <img id="preview" class="image-preview" alt="Preview" />
+        </div>
+        
+        <button id="predictButton" class="predict-button" disabled>
+            <span id="loadingSpinner" class="loading"></span>
+            <i class="fas fa-search"></i> Classify Garbage
+        </button>
+        
+        <div id="prediction" class="result"></div>
+    </div>
+    
+    <div class="footer">
+        <p>EPOCH 2.0 &copy; 2025 | Helping build a cleaner environment through technology</p>
     </div>
     
     <script>
-        document.getElementById("imageInput").addEventListener("change", function(event) {
-            const file = event.target.files[0];
+        const dropArea = document.getElementById('dropArea');
+        const fileInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+        const predictButton = document.getElementById('predictButton');
+        const prediction = document.getElementById('prediction');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('dragover');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('dragover');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        }
+
+        fileInput.addEventListener("change", handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const img = document.getElementById("preview");
-                    img.src = e.target.result;
-                    img.style.display = "block";
+                    preview.src = e.target.result;
+                    preview.style.display = "block";
+                    predictButton.disabled = false;
+                    prediction.style.display = "none";
                 }
                 reader.readAsDataURL(file);
             }
-        });
+        }
+
+        predictButton.addEventListener("click", uploadImage);
 
         function uploadImage() {
-            const fileInput = document.getElementById("imageInput");
             if (!fileInput.files.length) {
                 alert("Please select an image first.");
                 return;
             }
+
+            // Show loading state
+            loadingSpinner.style.display = "inline-block";
+            predictButton.disabled = true;
+            prediction.style.display = "none";
 
             const file = fileInput.files[0];
             const formData = new FormData();
@@ -75,11 +305,29 @@
             })
             .then(response => response.json())
             .then(data => {
-                document.getElementById("prediction").innerText = "Prediction: " + data.prediction;
+                // Display results
+                prediction.innerHTML = `
+                    <div style="background-color: rgba(56, 142, 60, 0.1); padding: 20px; border-left: 4px solid var(--primary-color); text-align: left;">
+                        <h3 style="margin-top: 0;">Classification Result</h3>
+                        <p style="font-size: 1.3rem; color: var(--primary-color);">${data.prediction}</p>
+                    </div>
+                `;
+                prediction.style.display = "block";
             })
             .catch(error => {
                 console.error("Error:", error);
-                document.getElementById("prediction").innerText = "Error in prediction.";
+                prediction.innerHTML = `
+                    <div style="background-color: rgba(211, 47, 47, 0.1); padding: 20px; border-left: 4px solid #d32f2f; text-align: left;">
+                        <h3 style="margin-top: 0; color: #d32f2f;">Error</h3>
+                        <p>Unable to analyze the image. Please try again with a different image.</p>
+                    </div>
+                `;
+                prediction.style.display = "block";
+            })
+            .finally(() => {
+                // Hide loading state
+                loadingSpinner.style.display = "none";
+                predictButton.disabled = false;
             });
         }
     </script>
